@@ -98,7 +98,7 @@ def train_epoch(model, dataloader, optimizer, loss_fn, device, epoch, global_ste
     return global_step
 
 
-def run_validation(model, dataloader, loss_fn, device, writer, global_step):
+def run_validation(model, dataloader, loss_fn, device, global_step, writer=None):
     """Run validation."""
     model.eval()
     total_loss = 0
