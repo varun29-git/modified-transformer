@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
-from torch.utils.tensorboard import SummaryWriter
+
 from tqdm import tqdm
 import warnings
 from pathlib import Path
@@ -158,9 +158,6 @@ def train_model(texts):
     # Count parameters
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Model parameters: {n_params:,}")
-    
-    # Tensorboard writer
-    writer = SummaryWriter(EXPERIMENT_NAME)
     
     # Optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY, eps=1e-9)
