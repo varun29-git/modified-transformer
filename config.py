@@ -5,7 +5,7 @@ LR = 3e-4
 WEIGHT_DECAY = 0.01
 
 D_MODEL = 256
-H = 6
+H = 4
 N = 6
 D_FF = 1024
 DROPOUT = 0.1
