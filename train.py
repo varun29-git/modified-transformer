@@ -248,7 +248,8 @@ if __name__ == "__main__":
     from datasets import load_dataset
     
     dataset = load_dataset("roneneldan/TinyStories", split="train")
-    texts = [item['text'] for item in dataset[:50000]]
+    dataset_subset = dataset.select(range(50000))
+    texts = [item['text'] for item in dataset_subset]
     
     print(f"Loaded {len(texts)} stories")
     print(f"Sample story:\n{texts[0][:200]}...\n")
