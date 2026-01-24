@@ -58,7 +58,7 @@ def get_ds(texts):
     return train_dataloader, val_dataloader, dataset
 
 
-def train_epoch(model, dataloader, optimizer, loss_fn, device, epoch, writer, global_step, scaler=None):
+def train_epoch(model, dataloader, optimizer, loss_fn, device, epoch, global_step, scaler=None):
     """Train for one epoch."""
     model.train()
     batch_iterator = tqdm(dataloader, desc=f"Processing Epoch {epoch:02d}")
@@ -92,10 +92,6 @@ def train_epoch(model, dataloader, optimizer, loss_fn, device, epoch, writer, gl
         
         # Update progress bar
         batch_iterator.set_postfix({"loss": f"{loss.item():6.3f}"})
-        
-        # Log to tensorboard
-        writer.add_scalar("train loss", loss.item(), global_step)
-        writer.flush()
         
         global_step += 1
     
@@ -196,20 +192,19 @@ def train_model(texts):
         # Train
         global_step = train_epoch(
             model, train_dataloader, optimizer, loss_fn, 
-            device, epoch, writer, global_step, scaler
+            device, epoch, global_step, scaler
         )
         
         # Validate
         val_loss = run_validation(
             model, val_dataloader, loss_fn, 
-            device, writer, global_step
+            device, global_step
         )
         
         # Update learning rate
         scheduler.step()
         current_lr = scheduler.get_last_lr()[0]
         print(f"Learning Rate: {current_lr:.6f}")
-        writer.add_scalar("learning rate", current_lr, global_step)
         
         # Save checkpoint
         model_filename = Path(MODEL_FOLDER) / f"checkpoint_{epoch:02d}.pt"
@@ -232,7 +227,6 @@ def train_model(texts):
     print("\n" + "="*50)
     print("Training complete!")
     print("="*50)
-    writer.close()
     
     return model
 
