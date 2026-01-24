@@ -1,4 +1,4 @@
-EPOCHS = 8 
+EPOCHS = 6 
 BATCH_SIZE = 8
 SEQ_LEN = 128
 LR = 3e-4
