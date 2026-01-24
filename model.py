@@ -87,7 +87,7 @@ class RotaryMultiHeadAttention(nn.Module):
         attention_scores = (query @ key.transpose(-2, -1)) / math.sqrt(d_k)
 
         if mask is not None:
-            attention_scores.masked_fill_(mask == 0, -1e20)
+            attention_scores.masked_fill_(mask == 0, -1e9)
         attention_scores = attention_scores.softmax(dim = -1) # ((Q @ K.T)/ d_model  ** 0.5)
 
         if Dropout is not None:
