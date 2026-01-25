@@ -123,8 +123,10 @@ def run_validation(model, dataloader, loss_fn, device, global_step, writer=None)
     avg_loss = total_loss / num_batches
     
     # Log to tensorboard
-    writer.add_scalar("validation loss", avg_loss, global_step)
-    writer.flush()
+    if writer is not None:
+        writer.add_scalar("validation loss", avg_loss, global_step)
+        writer.flush()
+
     
     print(f"Validation Loss: {avg_loss:.4f} | Perplexity: {torch.exp(torch.tensor(avg_loss)):.2f}")
     
