@@ -37,11 +37,13 @@ if __name__ == "__main__":
     # Load tokenizer
     tokenizer = tiktoken.encoding_for_model("gpt-4")
     vocab_size = tokenizer.n_vocab
-    
+
+    map_location = "cuda" if torch.cuda.is_available() else "cpu"
+
     # Load model
     print("Loading model...")
     model = build_transformer(vocab_size, D_MODEL, H, N, D_FF, DROPOUT).to(device)
-    model.load_state_dict(torch.load('weights/best_model.pt'))
+    model.load_state_dict(torch.load('weights/best_model.pt', map_location=map_location))
     print("Model loaded!")
     
     # Test prompts
