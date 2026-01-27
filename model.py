@@ -4,20 +4,19 @@ import torch.nn.functional as F
 import math
 
 
-#####################################################################################
- 
+#--------------------------------------------------------------------------------------------------------------------------- 
+
 class InputEmbedding(nn.Module):
 
     def __init__(self, vocab_size, d_model):
         super().__init__()
-        # Removed redundant self assignments
         self.embedding = nn.Embedding(vocab_size, d_model)
     
     def forward(self, x):
         # Not scaled by root of d_model
         return self.embedding(x)
     
-#####################################################################################
+#---------------------------------------------------------------------------------------------------------------------------
 
 class RMSNorm(nn.Module):
 
@@ -45,7 +44,7 @@ class RMSNorm(nn.Module):
 
         return x
 
-#####################################################################################
+#---------------------------------------------------------------------------------------------------------------------------
 
 class FeedForward(nn.Module):
 
@@ -60,7 +59,7 @@ class FeedForward(nn.Module):
         # FFN(x) = silu(W1x + b1) W2
         return self.Linear2(self.dropout(F.silu(self.Linear1(x))))
 
-#####################################################################################
+#---------------------------------------------------------------------------------------------------------------------------
 
 class RotaryMultiHeadAttention(nn.Module):
 
@@ -84,12 +83,16 @@ class RotaryMultiHeadAttention(nn.Module):
     def Attention(query, key, values, mask, Dropout: nn.Dropout):
 
         d_k = query.shape[-1]
+
+        # Compute attention scores
         attention_scores = (query @ key.transpose(-2, -1)) / math.sqrt(d_k)
 
+        # Apply mask if any
         if mask is not None:
             attention_scores = attention_scores.masked_fill(mask == 0, float('-inf'))
         attention_scores = attention_scores.softmax(dim = -1) # ((Q @ K.T)/ d_model  ** 0.5)
 
+        # Apply dropout
         if Dropout is not None:
             attention_scores = Dropout(attention_scores)
         
@@ -97,26 +100,39 @@ class RotaryMultiHeadAttention(nn.Module):
     
     @staticmethod
     def apply_rope(x, sin, cos):
-        # x: (B, h, T, d_k)
+        B, h, T, d_k = x.shape
+        assert d_k % 2 == 0, "RoPE requires even d_k"
+
+        # If sin and cos are 2D, expand them to match the batch and head dimensions
+        if sin.dim() == 2:      # (T, d_k//2)
+            sin = sin[None, None, :, :]  # (1, 1, T, d_k//2)
+            cos = cos[None, None, :, :]
+        
+        # Split even and odd
         x_even = x[..., 0::2]
         x_odd  = x[..., 1::2]
 
-        x_rot = torch.empty_like(x)
-        x_rot[..., 0::2] = x_even * cos - x_odd * sin
-        x_rot[..., 1::2] = x_even * sin + x_odd * cos
+        # Apply RoPE to even and odd
+        x_rot_even = x_even * cos - x_odd * sin
+        x_rot_odd  = x_odd  * cos + x_even * sin
 
+        # Combine even and odd
+        x_rot = torch.stack([x_rot_even, x_rot_odd], dim=-1).flatten(-2)
         return x_rot
     
     @staticmethod
     def get_rope_sin_cos(T, d_k, device):
         assert d_k % 2 == 0
 
+        # Positional encoding
         pos = torch.arange(T, device=device)          # (T,)
         dim = torch.arange(0, d_k, 2, device=device)  # (d_k/2,)
 
+        # Inverse frequency
         inv_freq = 1.0 / (10000 ** (dim / d_k))
         angles = pos[:, None] * inv_freq[None, :]     # (T, d_k/2)
 
+        # Sine and cosine
         sin = angles.sin()[None, None, :, :]  # (1, 1, T, d_k/2)
         cos = angles.cos()[None, None, :, :]  # (1, 1, T, d_k/2)
 
@@ -160,17 +176,11 @@ class ResidualConnection(nn.Module):
     def forward(self, x, sublayer):
         return x + self.dropout(sublayer(self.norm(x)))
 
-#####################################################################################
+#---------------------------------------------------------------------------------------------------------------------------
 
 class DecoderBlock(nn.Module):
 
-    def __init__(
-        self,
-        d_model,
-        self_attention: RotaryMultiHeadAttention,
-        feed_forward: FeedForward,
-        dropout
-    ):
+    def __init__(self, d_model, self_attention: RotaryMultiHeadAttention, feed_forward: FeedForward, dropout):
         super().__init__()
 
         self.self_attention = self_attention
@@ -226,12 +236,7 @@ class ProjectionLayer(nn.Module):
 
 class Transformer(nn.Module):
 
-    def __init__(
-        self,
-        decoder: Decoder,
-        token_embedding: InputEmbedding,
-        projection: ProjectionLayer
-    ):
+    def __init__(self, decoder: Decoder, token_embedding: InputEmbedding, projection: ProjectionLayer):
         super().__init__()
         self.decoder = decoder
         self.token_embedding = token_embedding
