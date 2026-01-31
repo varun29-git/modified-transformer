@@ -12,7 +12,7 @@ flowchart TD
         
         %% Sublayer 1: MHA
         BlockIn -->|Pre-Norm| Norm1[RMSNorm]
-        Norm1 --> MHA[Masked Multi-Head Attn<br/>(Rotary Embeddings)]
+        Norm1 --> MHA["Masked Multi-Head Attn<br/>(Rotary Embeddings)"]
         MHA --> Drop1[Dropout]
         
         %% Residual 1
@@ -21,7 +21,7 @@ flowchart TD
         
         %% Sublayer 2: FFN
         Add1 -->|Pre-Norm| Norm2[RMSNorm]
-        Norm2 --> FFN[Feed Forward<br/>SwiGLU / SiLU]
+        Norm2 --> FFN["Feed Forward<br/>SwiGLU / SiLU"]
         FFN --> Drop2[Dropout]
         
         %% Residual 2
