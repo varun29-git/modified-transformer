@@ -79,7 +79,7 @@ Uses OpenAI's tiktoken for subword tokenization.
 - Precision: Supports Mixed Precision training (torch.amp) for faster execution on GPUs.
 - Logging: Metrics (Loss, Learning Rate) are logged via TensorBoard.
 
-## Inference
+## Results and Analysis
 `Inference.ipynb`
 
 Observations from the file reveal distinct strengths and limitations characteristic of small-scale transformers ($N=6$, $d_{model}=256$).
@@ -106,7 +106,7 @@ Analysis: The repetition ("rabbit and a rabbit") indicates a failure in diversit
 
 ## Design Philosophy
 
-This project prioritizes architectural clarity over scale.
-The goal is to understand *why* modern transformers work, not to chase
-benchmark scores.
+This project prioritizes architectural clarity at a small scale, with the goal
+of understanding how modern transformer design choices affect learning dynamics
+and generation behavior.
 
