@@ -78,7 +78,7 @@ Uses OpenAI's tiktoken for subword tokenization.
 
 Observations from the file reveal distinct strengths and limitations characteristic of small-scale transformers ($N=6$, $d_{model}=256$).
 
-1. Structural Coherence
+1. ### Structural Coherence
 
 The model successfully captures narrative structure and grammar. It understands that stories begin with an introduction and require subject-verb agreement.
 
@@ -86,7 +86,7 @@ The model successfully captures narrative structure and grammar. It understands 
 
 Observation: The model correctly associates entities ("knight", "castle") even in novel contexts ("beach"). The sentence structure is grammatically perfect, demonstrating that the RoPE implementation is correctly preserving position-dependent syntax.
 
-2. Logic Drift & Hallucination (Limitations)
+2. ### Logic Drift & Hallucination (Limitations)
 
 Unlike large foundational models, this smaller architecture sometimes struggles with object permanence or logical causality over long sequences.
 
