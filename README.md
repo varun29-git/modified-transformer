@@ -33,7 +33,7 @@ flowchart TD
         
         %% Sublayer 1: MHA
         BlockIn -->|Pre-Norm| Norm1[RMSNorm]
-        Norm1 --> MHA["Masked Multi-Head Attn<br/>(Rotary Embeddings)"]
+        Norm1 --> MHA["Masked Multi-Head Attention<br/>(Q, K with RoPE)"]
         MHA --> Drop1[Dropout]
         
         %% Residual 1
