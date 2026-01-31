@@ -106,7 +106,7 @@ Analysis: The repetition ("rabbit and a rabbit") indicates a failure in diversit
 
 ## Design Philosophy
 
-This project intentionally prioritizes architectural clarity over scale.
+This project prioritizes architectural clarity over scale.
 The goal is to understand *why* modern transformers work, not to chase
 benchmark scores.
 
