@@ -5,6 +5,12 @@ This repository contains a PyTorch implementation of a **Decoder-only Transforme
 `model.py`
 The architecture deviates from the original "Attention Is All You Need" paper by incorporating modern enhancements for stability and performance.
 
+| Component | Original Transformer | This Repo |
+|---------|----------------------|-----------|
+| Norm    | LayerNorm (Post)     | RMSNorm (Pre) |
+| PosEnc | Absolute             | RoPE |
+| FFN Act| ReLU                 | SiLU |
+
 - Input Embeddings: Unlike the original paper, embeddings are not scaled by $\sqrt{d_{model}}$.
 - Rotary Positional Embeddings (RoPE): Instead of absolute positional encodings, position information is encoded by rotating the Query and Key vectors at every attention step.
 - RMSNorm: Uses Root Mean Square Normalization instead of LayerNorm. This normalizes scale without centering the mean, improving stability
@@ -97,3 +103,10 @@ Analysis: While grammatically correct, the action "close the picture of himself"
 *Example (Story 3): "In a magical forest, a small rabbit and a rabbit were playing... The rabbit asked the rabbit..."*
 
 Analysis: The repetition ("rabbit and a rabbit") indicates a failure in diversity during sampling or a limitation in the model's ability to track distinct identities in the context window.
+
+## Design Philosophy
+
+This project intentionally prioritizes architectural clarity over scale.
+The goal is to understand *why* modern transformers work, not to chase
+benchmark scores.
+
